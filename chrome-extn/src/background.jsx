@@ -8,13 +8,12 @@ chrome.storage.sync.get(["redirectEnabled"], function(result) {
 });
 
 function updateRedirectRule() {
-    // First, remove the rule if it already exists to avoid the duplicate ID error
     chrome.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: [REDIRECT_RULE_ID],
         addRules: redirectEnabled ? [{
             "id": REDIRECT_RULE_ID,
             "priority": 1,
-            "action": { "type": "redirect", "redirect": { "url": "https://www.youtube.com" } }, // Your target URL
+            "action": { "type": "redirect", "redirect": { "url": "https://www.youtube.com" } },
             "condition": { "urlFilter": "*", "resourceTypes": ["main_frame"] }
         }] : []
     }, function() {
