@@ -1,16 +1,11 @@
 let redirectEnabled = true;
+let isRedirectEnabled = true;
 const REDIRECT_RULE_ID = 1;
-
-// Check if the redirect flag is stored in Chrome storage
-chrome.storage.sync.get(["redirectEnabled"], function(result) {
-    redirectEnabled = result.redirectEnabled !== undefined ? result.redirectEnabled : true;
-    updateRedirectRule();
-});
 
 function updateRedirectRule() {
     chrome.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: [REDIRECT_RULE_ID],
-        addRules: redirectEnabled ? [{
+        addRules: (isRedirectEnabled && redirectEnabled) ? [{
             "id": REDIRECT_RULE_ID,
             "priority": 1,
             "action": { "type": "redirect", "redirect": { "url": "https://www.youtube.com" } },
@@ -22,6 +17,13 @@ function updateRedirectRule() {
         }
     });
 }
+
+// Check if the redirect flag and enable flag are stored in Chrome storage
+chrome.storage.sync.get(["redirectEnabled", "isRedirectEnabled"], function(result) {
+    redirectEnabled = result.redirectEnabled !== undefined ? result.redirectEnabled : true;
+    isRedirectEnabled = result.isRedirectEnabled !== undefined ? result.isRedirectEnabled : true;
+    updateRedirectRule();
+});
 
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
